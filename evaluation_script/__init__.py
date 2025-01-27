@@ -34,8 +34,6 @@ def install_local_package(folder_name):
 
 install("shapely==1.7.1")
 install("requests==2.25.1")
-install("Levenshtein==0.20.9")  # For computing CER
-install("jiwer==2.3.0")      # For computing WER
 
 install_local_package("package_folder_name")
 
