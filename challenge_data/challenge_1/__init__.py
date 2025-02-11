@@ -1,5 +1,49 @@
-# Q. How to install custom python pip packages?
+# # Q. How to install custom python pip packages?
 
+# # A. Uncomment the below code to install the custom python packages.
+
+# import os
+# import subprocess
+# import sys
+# from pathlib import Path
+
+# def install(package):
+#     # Install a pip python package
+
+#     # Args:
+#     #     package ([str]): Package name with version
+#     print(f"Installing {package}...")
+#     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+
+# # def install_local_package(folder_name):
+# #     # Install a local python package
+
+# #     # Args:
+# #     #     folder_name ([str]): name of the folder placed in evaluation_script/
+    
+# #     subprocess.check_output(
+# #     [
+# #         sys.executable,
+# #         "-m",
+# #         "pip",
+# #         "install",
+# #         os.path.join(str(Path(__file__).parent.absolute()) + folder_name),
+# #     ]
+# # )
+
+# install("shapely==1.7.1")
+# install("requests==2.25.1")
+
+# # install_local_package("package_folder_name")
+
+
+# from .main import evaluate
+
+
+# **************************************
+
+# Q. How to install custom python pip packages?
 # A. Uncomment the below code to install the custom python packages.
 
 import os
@@ -8,34 +52,38 @@ import sys
 from pathlib import Path
 
 def install(package):
-    # Install a pip python package
+    """
+    Install a pip python package.
 
-    # Args:
-    #     package ([str]): Package name with version
-    print(f"Installing {package}...")
+    Args:
+        package ([str]): Package name with version.
+    """
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 
-# def install_local_package(folder_name):
-#     # Install a local python package
+def install_local_package(folder_name):
+    """
+    Install a local python package.
 
-#     # Args:
-#     #     folder_name ([str]): name of the folder placed in evaluation_script/
-    
-#     subprocess.check_output(
-#     [
-#         sys.executable,
-#         "-m",
-#         "pip",
-#         "install",
-#         os.path.join(str(Path(__file__).parent.absolute()) + folder_name),
-#     ]
-# )
-
-install("shapely==1.7.1")
-install("requests==2.25.1")
-
-# install_local_package("package_folder_name")
+    Args:
+        folder_name ([str]): Name of the folder placed in evaluation_script/.
+    """
+    subprocess.check_output(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            os.path.join(str(Path(__file__).parent.absolute()) + folder_name),
+        ]
+    )
 
 
+# Install required pip packages
+# install("jiwer==2.3.0")  # Library for calculating WER and CER
+
+# If you have any local packages, install them here
+# Example: install_local_package("package_folder_name")
+
+# Import the evaluate function from your main script
 from .main import evaluate
