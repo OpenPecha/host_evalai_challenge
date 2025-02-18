@@ -34,6 +34,7 @@ def install(package):
 
 install("shapely==1.7.1")
 install("requests==2.25.1")
+install("evaluate==0.4.1")
 
 # install_local_package("package_folder_name")
 
