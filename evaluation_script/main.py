@@ -1,6 +1,10 @@
 import json
 from evaluate import load
 
+# reference: https://evalai.readthedocs.io/en/latest/evaluation_scripts.html
+# using the evaluation script from the above link, we can send notifications to your slack channel or to some 
+# other webhook service when some one breaks the record or when the evaluation is completed.
+
 cer_metric = load("cer")
 wer_metric = load("wer")
 
@@ -20,6 +24,53 @@ def calculate_wer(true_text, inference_text):
         return wer
     except:
         return 0.0
+
+
+
+
+def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwargs):
+    print("Starting Evaluation.....")
+    output = {}
+
+    # Load test annotations and user submissions
+    with open(test_annotation_file, "r", encoding="utf-8") as test_file:
+        test_data = json.load(test_file)
+
+    with open(user_submission_file, "r", encoding="utf-8") as submission_file:
+        user_data = json.load(submission_file)
+
+    if phase_codename != "test":
+        print(f"Unsupported phase_codename: {phase_codename}")
+        return {"error": "Unsupported phase_codename. Only 'test' is allowed."}
+
+    print("Evaluating for Test Phase")
+
+    total_cer = 0
+    total_wer = 0
+    count = 0
+
+    for key, reference in test_data.items():
+        hypothesis = user_data.get(key, "")  # Get user's prediction or empty string
+        cer = calculate_cer(reference, hypothesis)
+        wer = calculate_wer(reference, hypothesis)
+        total_cer += cer
+        total_wer += wer
+        count += 1
+
+    avg_cer = total_cer / count if count > 0 else 0
+    avg_wer = total_wer / count if count > 0 else 0
+
+    output["result"] = [{"test_split": {"CER": round(avg_cer, 4), "WER": round(avg_wer, 4)}}]
+    output["submission_result"] = output["result"][0]["test_split"]
+
+    print(f"Evaluation Complete!\nCER: {avg_cer:.4f}, WER: {avg_wer:.4f}")
+    return output
+
+
+
+
+
+# old code
 
 
 # def calculate_edit_distance(reference, hypothesis):
@@ -60,42 +111,3 @@ def calculate_wer(true_text, inference_text):
 #     hyp_words = hypothesis.split()
 #     distance = calculate_edit_distance(ref_words, hyp_words)
 #     return distance / len(ref_words) if len(ref_words) > 0 else 0
-
-
-def evaluate(test_annotation_file, user_submission_file, phase_codename, **kwargs):
-    print("Starting Evaluation.....")
-    output = {}
-
-    # Load test annotations and user submissions
-    with open(test_annotation_file, "r", encoding="utf-8") as test_file:
-        test_data = json.load(test_file)
-
-    with open(user_submission_file, "r", encoding="utf-8") as submission_file:
-        user_data = json.load(submission_file)
-
-    if phase_codename != "test":
-        print(f"Unsupported phase_codename: {phase_codename}")
-        return {"error": "Unsupported phase_codename. Only 'test' is allowed."}
-
-    print("Evaluating for Test Phase")
-
-    total_cer = 0
-    total_wer = 0
-    count = 0
-
-    for key, reference in test_data.items():
-        hypothesis = user_data.get(key, "")  # Get user's prediction or empty string
-        cer = calculate_cer(reference, hypothesis)
-        wer = calculate_wer(reference, hypothesis)
-        total_cer += cer
-        total_wer += wer
-        count += 1
-
-    avg_cer = total_cer / count if count > 0 else 0
-    avg_wer = total_wer / count if count > 0 else 0
-
-    output["result"] = [{"test_split": {"CER": round(avg_cer, 4), "WER": round(avg_wer, 4)}}]
-    output["submission_result"] = output["result"][0]["test_split"]
-
-    print(f"Evaluation Complete!\nCER: {avg_cer:.4f}, WER: {avg_wer:.4f}")
-    return output
